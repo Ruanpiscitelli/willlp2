@@ -1,0 +1,827 @@
+---
+import OptimizedFont from '../components/OptimizedFont.astro';
+import OptimizedScript from '../components/OptimizedScript.astro';
+import OptimizedStyle from '../components/OptimizedStyle.astro';
+import GoogleTagManager from '../components/GoogleTagManager.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+
+// Definir rotas prováveis para prefetch
+const probableRoutes = [
+  '/index.html',
+  // Adicione outras rotas prováveis aqui
+];
+
+// Importar o script de registro do service worker
+import '../scripts/register-sw.js';
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    
+    <!-- Google Tag Manager -->
+    <GoogleTagManager />
+    
+    <!-- Manifesto PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#c30000" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="CopyCash" />
+    <link rel="apple-touch-icon" href="/icons/apple-icon-180.png" />
+    
+    <!-- Otimização de fontes -->
+    <OptimizedFont 
+      fontFamily="Montserrat"
+      fontUrl="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
+      fontDisplay="swap"
+      preload={true}
+    />
+    
+    <!-- Prefetch para rotas prováveis -->
+    {probableRoutes.map(route => (
+      <link rel="prefetch" href={route} />
+    ))}
+    
+    <!-- Open Graph / Facebook Tags -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    
+    <!-- Twitter Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    
+    <!-- Preload de scripts críticos -->
+    <link rel="preload" as="script" href="/js/critical.js" />
+    
+    <!-- Preload de imagens críticas -->
+    <link rel="preload" as="image" href="/laptop.webp" />
+    
+    <!-- Preconnect para domínios externos -->
+    <link rel="preconnect" href="https://t.me" />
+    
+    <!-- Preload de fontes críticas -->
+    <link
+      rel="preload"
+      href="/fonts/inter-var.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    
+    <!-- Script de otimização de carregamento -->
+    <script src="/js/optimize-loading.js" type="module"></script>
+    
+    <!-- Preconnect para domínios externos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <slot name="head" />
+  </head>
+  <body>
+    <!-- Google Tag Manager (noscript) -->
+    <GoogleTagManager noscript={true} />
+    
+    <!-- Sticky Header with CTA -->
+    <div class="sticky-header" id="stickyHeader">
+      <div class="container">
+        <div class="sticky-content">
+          <div class="logo-mini">COPY CA$H</div>
+          <a href="https://clkdmg.site/subscribe/copycash-vip-aqs-tf-pv-2412" class="btn btn-sticky">GARANTIR ACESSO AGORA</a>
+        </div>
+      </div>
+    </div>
+    
+    <slot />
+    
+    <!-- Floating Action Button for Mobile -->
+    <div class="floating-cta">
+      <a href="https://clkdmg.site/subscribe/copycash-vip-aqs-tf-pv-2412" class="btn btn-floating">GARANTIR VAGA</a>
+    </div>
+
+    <!-- Exit Popup -->
+    <div class="exit-popup" id="exit-popup">
+      <div class="popup-overlay"></div>
+      <div class="popup-content">
+        <button class="close-popup" id="close-popup">&times;</button>
+        <h2 class="popup-title">ESPERA AÍ!</h2>
+        
+        <h3 class="popup-subtitle">ÚLTIMA CHANCE DE MUDAR SUA VIDA FINANCEIRA!</h3>
+        
+        <p class="popup-text">Olha só... já foram mais de <strong>14.739 pessoas</strong> que transformaram suas vidas com o método COPY CA$H.</p>
+        
+        <p class="popup-text">E você vai mesmo fechar essa página e continuar na mesma situação?</p>
+        
+        <p class="popup-text">Enquanto você hesita, outras pessoas já estão fazendo <strong>R$1.247 POR DIA</strong>.</p>
+        
+        <div class="popup-offer">
+          <h4 class="offer-title">🔥 OFERTA EXCLUSIVA DE SAÍDA 🔥</h4>
+          
+          <p class="offer-text">Liberei as <strong>ÚLTIMAS 5 VAGAS</strong> com um BÔNUS EXTRA:
+          <br>Acesso ao grupo privado de SINAIS DIÁRIOS para multiplicação acelerada!</p>
+        </div>
+        
+        <a href="https://clkdmg.site/subscribe/copycash-vip-aqs-tf-pv-2412" class="cta-button">👉 CLIQUE AQUI PARA GARANTIR SUA VAGA AGORA 👈</a>
+        
+        <p class="urgency-text">⚠️ As vagas estão sendo preenchidas a cada 27 segundos.
+        <br>Esta é a ÚLTIMA vez que você verá esta oferta.</p>
+      </div>
+    </div>
+    
+    <!-- Scripts otimizados -->
+    <!-- Carregamento do exit-intent.js -->
+    <script src="/js/exit-intent.js" defer></script>
+    
+    <!-- Script de analytics -->
+    <OptimizedScript 
+      src="/js/analytics.js" 
+      strategy="afterInteractive" 
+      defer={true}
+    />
+    
+    <!-- Scripts não críticos com lazy loading -->
+    <script data-lazy-script data-src="/js/analytics.js"></script>
+    <script data-lazy-script data-src="/js/chat-widget.js"></script>
+    
+    <script>
+      // Estratégia: Módulo auto-executável para isolar variáveis e evitar poluição do escopo global
+      (function() {
+        // ============== 1. Utilitários otimizados ==============
+        // Função throttle para limitar a frequência de execução de funções
+        const throttle = (func, limit) => {
+          let inThrottle;
+          let lastFunc;
+          let lastRan;
+          
+          return function() {
+            const context = this;
+            const args = arguments;
+            
+            if (!inThrottle) {
+              func.apply(context, args);
+              lastRan = Date.now();
+              inThrottle = true;
+            } else {
+              clearTimeout(lastFunc);
+              lastFunc = setTimeout(function() {
+                if (Date.now() - lastRan >= limit) {
+                  func.apply(context, args);
+                  lastRan = Date.now();
+                }
+              }, limit - (Date.now() - lastRan));
+            }
+          };
+        };
+        
+        // Função debounce aprimorada
+        const debounce = (func, wait, immediate = false) => {
+          let timeout;
+          
+          return function executedFunction() {
+            const context = this;
+            const args = arguments;
+            
+            const later = function() {
+              timeout = null;
+              if (!immediate) func.apply(context, args);
+            };
+            
+            const callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            
+            if (callNow) func.apply(context, args);
+          };
+        };
+        
+        // ============== 2. Detecção de dispositivo - uma única vez no carregamento ==============
+        // Detectar dispositivo móvel - computado uma única vez e armazenado
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        sessionStorage.setItem('isMobile', isMobile.toString());
+        
+        // ============== 3. DOM References - armazenadas para evitar re-queries ==============
+        // Mapa de elementos DOM - use apenas após DOMContentLoaded
+        let elements = {};
+        
+        // ============== 4. Estado compartilhado em objeto único ==============
+        // Uso de um único objeto para todo o estado do app
+        const state = {
+          hasShownPopup: sessionStorage.getItem('hasShownPopup') === 'true',
+          pageLoadTime: Date.now(),
+          lastScrollPos: 0,
+          scrollUpDistance: 0,
+          inactivityTimer: null,
+          INACTIVITY_TIMEOUT: 30000,
+          MIN_PAGE_VIEW_TIME: 15000,
+          SCROLL_UP_THRESHOLD: 100
+        };
+        
+        // ============== 5. Funções principais otimizadas ==============
+        // Função para mostrar o popup - implementada usando requestAnimationFrame
+        function showExitPopup() {
+          // Early return para casos que não satisfazem as condições
+          if (state.hasShownPopup) return;
+          if ((Date.now() - state.pageLoadTime) < state.MIN_PAGE_VIEW_TIME) return;
+          if (!elements.exitPopup) return;
+          
+          requestAnimationFrame(() => {
+            elements.exitPopup.classList.add('visible');
+            state.hasShownPopup = true;
+            sessionStorage.setItem('hasShownPopup', 'true');
+          });
+          
+          clearTimeout(state.inactivityTimer);
+        }
+        
+        // Handler de scroll otimizado com throttle - melhora significativa de desempenho
+        const handleScroll = throttle(() => {
+          // Armazenar posição antes da scrollY para cálculos mais eficientes
+          const scrollY = window.scrollY;
+          const header = elements.header;
+          
+          // 1. Sticky header - usando early return para máxima eficiência
+          if (!header) return;
+          
+          // Usar classList.contains apenas uma vez para evitar múltiplas consultas ao DOM
+          const headerVisible = header.classList.contains('visible');
+          
+          // Toggle de classe apenas quando necessário
+          if (scrollY > 300 && !headerVisible) {
+            requestAnimationFrame(() => header.classList.add('visible'));
+          } else if (scrollY <= 300 && headerVisible) {
+            requestAnimationFrame(() => header.classList.remove('visible'));
+          }
+          
+          // 2. Exit popup logic - menos cálculos e consultas DOM
+          if (!state.hasShownPopup && scrollY > window.innerHeight / 2) {
+            // Implementar prefetch de recursos quando o usuário rolar para baixo
+            if (window.requestIdleCallback) {
+              requestIdleCallback(() => {
+                const prefetchLinks = document.querySelectorAll('link[rel="prefetch"]');
+                if (prefetchLinks.length === 0) {
+                  probableRoutes.forEach(route => {
+                    const link = document.createElement('link');
+                    link.rel = 'prefetch';
+                    link.href = route;
+                    document.head.appendChild(link);
+                  });
+                }
+              });
+            }
+          }
+        }, 100);
+        
+        // Inicializar quando o DOM estiver pronto
+        document.addEventListener('DOMContentLoaded', () => {
+          // Armazenar referências DOM para evitar múltiplas consultas
+          elements = {
+            header: document.getElementById('stickyHeader'),
+            exitPopup: document.getElementById('exit-popup'),
+            closePopup: document.getElementById('close-popup')
+          };
+          
+          // Registrar event listeners
+          window.addEventListener('scroll', handleScroll, { passive: true });
+          
+          // Registrar listener para fechar popup
+          if (elements.closePopup) {
+            elements.closePopup.addEventListener('click', () => {
+              elements.exitPopup.classList.remove('visible');
+            });
+          }
+          
+          // Registrar métricas de performance
+          if (window.performance && window.performance.mark) {
+            window.performance.mark('dom-content-loaded');
+          }
+        });
+        
+        // Registrar métricas quando a página estiver totalmente carregada
+        window.addEventListener('load', () => {
+          if (window.performance && window.performance.mark) {
+            window.performance.mark('page-loaded');
+            
+            // Medir e registrar LCP
+            if ('PerformanceObserver' in window) {
+              const lcpObserver = new PerformanceObserver((entryList) => {
+                const entries = entryList.getEntries();
+                const lastEntry = entries[entries.length - 1];
+                console.debug('LCP:', lastEntry.startTime, lastEntry);
+              });
+              
+              lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
+            }
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  /* Reset CSS */
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  :root {
+    /* Define color variables based on design */
+    --color-primary: #c30000;
+    --color-secondary: #00c31d;
+    --color-accent: #FF6B00;
+    --color-background: #000;
+    --color-text: #ffffff;
+    --color-text-light: #cccccc;
+    --color-border: #333;
+    --font-family: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    
+    /* Define spacing variables */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 4rem;
+    
+    /* Performance: adicionar will-change para elementos que mudam com frequência */
+    --header-height: 4rem;
+  }
+  
+  html {
+    font-family: var(--font-family);
+    font-size: 16px;
+    color: var(--color-text);
+    background-color: var(--color-background);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    background: #000020; /* Cor sólida em vez da imagem de fundo */
+    overflow-x: hidden;
+    padding-top: 0;
+  }
+  
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    /* Adicionar estilo de fallback para imagens */
+    font-family: system-ui, sans-serif;
+    font-size: 0.7rem;
+    line-height: 1.2;
+    color: #ccc;
+  }
+  
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  
+  button {
+    font-family: inherit;
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+  
+  /* Utility classes */
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+  }
+  
+  .btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  
+  .btn-primary {
+    background-color: var(--color-secondary);
+    color: var(--color-text);
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 12px 30px;
+    border-radius: 6px;
+  }
+  
+  .btn-primary:hover {
+    transform: scale(1.05);
+  }
+  
+  .btn-cta {
+    background-color: var(--color-accent);
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 700;
+    padding: 15px 30px;
+    border-radius: 6px;
+    box-shadow: 0 5px 15px rgba(255, 107, 0, 0.4);
+    transition: all 0.3s ease;
+    animation: pulse 2s infinite;
+  }
+  
+  .btn-cta:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(255, 107, 0, 0.6);
+  }
+  
+  /* Sticky header */
+  .sticky-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 1000;
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+    padding: 10px 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    will-change: transform;
+  }
+  
+  .sticky-header.visible {
+    transform: translateY(0);
+  }
+  
+  .sticky-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo-mini {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--color-accent);
+  }
+  
+  .btn-sticky {
+    font-size: 0.9rem;
+    padding: 8px 15px;
+  }
+  
+  /* Floating mobile CTA */
+  .floating-cta {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: 90%;
+    max-width: 300px;
+    display: block;
+    padding: 0 var(--spacing-sm);
+  }
+  
+  .btn-floating {
+    width: 100%;
+    padding: 14px 24px;
+    font-size: 1rem;
+    background: var(--color-accent);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    box-shadow: 
+      0 4px 0 #CC5500,
+      0 8px 20px rgba(255, 107, 0, 0.25);
+    animation: pulse 2s infinite;
+    display: block;
+    margin-bottom: env(safe-area-inset-bottom, 20px);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+    transform-style: preserve-3d;
+    transition: all 0.2s ease;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-floating:active {
+    transform: translateY(2px);
+    box-shadow: 
+      0 2px 0 #CC5500,
+      0 4px 12px rgba(255, 107, 0, 0.2);
+  }
+  
+  .btn-floating::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 40%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+    pointer-events: none;
+  }
+  
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+  }
+  
+  @media (min-width: 768px) {
+    .btn-sticky {
+      font-size: 1rem;
+      padding: 10px 20px;
+    }
+
+    .logo-mini {
+      font-size: 1.5rem;
+    }
+
+    .floating-cta {
+      display: none;
+    }
+  }
+
+  /* Exit Popup Styles */
+  .exit-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2000;
+    visibility: hidden;
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+  }
+  
+  .exit-popup.visible {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  .popup-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+  }
+  
+  .popup-content {
+    position: relative;
+    width: 90%;
+    max-width: 600px;
+    background: linear-gradient(145deg, #1a1a1a, #000000);
+    border-radius: 20px;
+    padding: 2rem;
+    color: white;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 107, 0, 0.2);
+    z-index: 2001;
+    overflow: hidden;
+    animation: slideUp 0.4s ease-out;
+    will-change: transform, opacity;
+  }
+  
+  .close-popup {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+  
+  .close-popup:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+  }
+  
+  .popup-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 1rem;
+    color: var(--color-accent);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  .popup-subtitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #ffffff;
+  }
+  
+  .popup-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  .popup-text strong {
+    color: var(--color-accent);
+    font-weight: 700;
+  }
+  
+  .popup-offer {
+    background: rgba(255, 107, 0, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    border: 1px solid rgba(255, 107, 0, 0.3);
+  }
+  
+  .offer-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1rem;
+    color: var(--color-accent);
+  }
+  
+  .offer-text {
+    font-size: 1.1rem;
+    text-align: center;
+    line-height: 1.6;
+  }
+  
+  .cta-button {
+    display: block;
+    width: 100%;
+    padding: 1.2rem;
+    background: var(--color-accent);
+    color: white;
+    text-align: center;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 2rem 0;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 0 #CC5500,
+                0 8px 20px rgba(255, 107, 0, 0.25);
+    animation: pulse 2s infinite;
+  }
+  
+  .cta-button:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #CC5500,
+                0 4px 12px rgba(255, 107, 0, 0.2);
+  }
+  
+  .urgency-text {
+    font-size: 1rem;
+    text-align: center;
+    color: #ff4444;
+    margin-top: 1.5rem;
+    line-height: 1.6;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .popup-content {
+      padding: 1.5rem;
+      margin: 1rem;
+      max-height: 90vh;
+      overflow-y: auto;
+      width: 95%;
+      max-width: 100%;
+    }
+    
+    .popup-title {
+      font-size: 1.6rem;
+      margin-bottom: 0.6rem;
+    }
+    
+    .popup-subtitle {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .popup-text,
+    .offer-text {
+      font-size: 0.9rem;
+      margin-bottom: 0.8rem;
+    }
+    
+    .popup-offer {
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+    
+    .offer-title {
+      font-size: 1.1rem;
+      margin-bottom: 0.8rem;
+    }
+    
+    .cta-button {
+      padding: 1rem;
+      font-size: 1rem;
+      margin: 1rem 0;
+    }
+    
+    .urgency-text {
+      font-size: 0.8rem;
+      margin-top: 1rem;
+    }
+    
+    .close-popup {
+      top: 10px;
+      right: 10px;
+      width: 25px;
+      height: 25px;
+      font-size: 20px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .popup-content {
+      padding: 1.2rem;
+      border-radius: 15px;
+      width: 92%;
+      max-height: 85vh;
+    }
+    
+    .popup-title {
+      font-size: 1.4rem;
+    }
+    
+    .popup-subtitle {
+      font-size: 1rem;
+    }
+    
+    .popup-text,
+    .offer-text {
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+    
+    .popup-offer {
+      padding: 0.8rem;
+    }
+    
+    .offer-title {
+      font-size: 1rem;
+    }
+    
+    .cta-button {
+      padding: 0.8rem;
+      font-size: 0.9rem;
+    }
+  }
+</style>

@@ -1,0 +1,50 @@
+---
+interface Props {
+  fontFamily: string;
+  fontUrl: string;
+  fontDisplay?: 'auto' | 'block' | 'swap' | 'fallback' | 'optional';
+  preload?: boolean;
+}
+
+const { 
+  fontFamily, 
+  fontUrl, 
+  fontDisplay = 'swap', 
+  preload = true 
+} = Astro.props;
+---
+
+{preload && (
+  <Fragment>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href={fontUrl} />
+  </Fragment>
+)}
+
+<link rel="stylesheet" href={fontUrl} media="print" onload="this.media='all'" />
+
+<noscript>
+  <link rel="stylesheet" href={fontUrl} />
+</noscript>
+
+<style define:vars={{ fontFamily, fontDisplay }}>
+  /* Estilos de fallback para fontes */
+  body {
+    font-family: var(--fontFamily), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+    font-display: var(--fontDisplay);
+  }
+</style>
+
+<script>
+  // Verificar se a fonte foi carregada
+  document.fonts.ready.then(() => {
+    // Adicionar classe quando as fontes estiverem carregadas
+    document.documentElement.classList.add('fonts-loaded');
+    
+    // Registrar evento de performance para métricas
+    if (window.performance && window.performance.mark) {
+      window.performance.mark('fonts-loaded');
+    }
+  });
+</script> 

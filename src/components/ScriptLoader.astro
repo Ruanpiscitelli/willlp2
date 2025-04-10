@@ -1,0 +1,139 @@
+/**
+ * ScriptLoader.astro
+ * 
+ * Componente para carregamento otimizado de scripts
+ * - Suporte para defer, async e preload
+ * - Carregamento condicional baseado em media queries
+ * - Suporte para módulos ES
+ * - Priorização de scripts críticos
+ */
+
+interface Props {
+  src: string;
+  defer?: boolean;
+  async?: boolean;
+  module?: boolean;
+  preload?: boolean;
+  critical?: boolean;
+  media?: string;
+  onload?: string;
+  integrity?: string;
+  crossorigin?: 'anonymous' | 'use-credentials';
+}
+
+const {
+  src,
+  defer = true,
+  async = false,
+  module = false,
+  preload = false,
+  critical = false,
+  media,
+  onload,
+  integrity,
+  crossorigin
+} = Astro.props;
+
+// Determinar se o script é externo ou interno
+const isExternal = src.startsWith('http') || src.startsWith('//');
+
+// Determinar prioridade para preload
+const preloadAs = 'script';
+
+{/* Preload para scripts críticos */}
+{preload && (
+  <link 
+    rel="preload" 
+    href={src} 
+    as={preloadAs}
+    crossorigin={crossorigin}
+    {...integrity ? { integrity } : {}}
+  />
+)}
+
+{/* Script tag com atributos otimizados */}
+<script 
+  src={src}
+  {...defer && !async ? { defer: true } : {}}
+  {...async ? { async: true } : {}}
+  {...module ? { type: 'module' } : {}}
+  {...media ? { media } : {}}
+  {...onload ? { onload } : {}}
+  {...integrity ? { integrity } : {}}
+  {...crossorigin ? { crossorigin } : {}}
+  data-critical={critical ? 'true' : null}
+></script>
+
+{/* Script para monitorar carregamento e performance */}
+{critical && (
+  <script is:inline define:vars={{ src }}>
+    // Monitorar tempo de carregamento para scripts críticos
+    if (window.performance && window.performance.mark) {
+      const scriptEl = document.querySelector(`script[src="${src}"]`);
+      if (scriptEl) {
+        const scriptId = `script-${src.split('/').pop().replace(/\W+/g, '-')}`;
+        
+        // Marcar início do carregamento
+        performance.mark(`${scriptId}-start`);
+        
+        scriptEl.addEventListener('load', () => {
+          // Marcar fim do carregamento
+          performance.mark(`${scriptId}-end`);
+          
+          // Criar medição
+          performance.measure(
+            `Script Load: ${src}`,
+            `${scriptId}-start`,
+            `${scriptId}-end`
+          );
+          
+          // Enviar para analytics se disponível
+          if (window.gtag) {
+            const loadTime = performance.getEntriesByName(`Script Load: ${src}`)[0].duration;
+            gtag('event', 'script_load', {
+              'event_category': 'Performance',
+              'event_label': src,
+              'value': Math.round(loadTime)
+            });
+          }
+        });
+      }
+    }
+  </script>
+)}
+
+<style>
+  /* Estilos para fallback caso o script falhe */
+  [data-script-fallback] {
+    display: none;
+  }
+  
+  .script-error [data-script-fallback] {
+    display: block;
+  }
+</style>
+
+<script>
+  // Detectar falhas de carregamento de script
+  document.addEventListener('DOMContentLoaded', () => {
+    const scripts = document.querySelectorAll('script[src]');
+    
+    scripts.forEach(script => {
+      script.addEventListener('error', (e) => {
+        // Marcar como erro
+        document.documentElement.classList.add('script-error');
+        
+        // Registrar erro
+        console.error(`Falha ao carregar script: ${script.getAttribute('src')}`);
+        
+        // Enviar para analytics se disponível
+        if (window.gtag) {
+          gtag('event', 'script_error', {
+            'event_category': 'Error',
+            'event_label': script.getAttribute('src')
+          });
+        }
+      });
+    });
+  });
+</script> 

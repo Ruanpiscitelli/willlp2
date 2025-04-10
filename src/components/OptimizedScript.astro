@@ -1,0 +1,88 @@
+---
+interface Props {
+  src: string;
+  type?: string;
+  defer?: boolean;
+  async?: boolean;
+  strategy?: 'beforeInteractive' | 'afterInteractive' | 'lazyOnload';
+  onload?: string;
+}
+
+const { 
+  src, 
+  type = 'text/javascript', 
+  defer = false, 
+  async = false, 
+  strategy = 'afterInteractive',
+  onload
+} = Astro.props;
+
+// Determinar os atributos com base na estratégia
+let scriptAttributes: Record<string, any> = {};
+
+switch (strategy) {
+  case 'beforeInteractive':
+    // Carrega imediatamente, bloqueia o parsing
+    scriptAttributes = {};
+    break;
+  case 'afterInteractive':
+    // Carrega após o parsing do HTML
+    scriptAttributes = { defer: true };
+    break;
+  case 'lazyOnload':
+    // Carrega após a página estar completamente carregada
+    // Implementado via JavaScript abaixo
+    break;
+}
+
+// Sobrescrever com props explícitas
+if (defer) scriptAttributes.defer = true;
+if (async) scriptAttributes.async = true;
+if (onload) scriptAttributes.onload = onload;
+
+// Adicionar data-src para facilitar identificação pelo compressor
+scriptAttributes['data-src'] = src;
+---
+
+{strategy !== 'lazyOnload' ? (
+  <script 
+    src={src} 
+    type={type}
+    {...scriptAttributes}
+  />
+) : (
+  <script data-strategy="lazyOnload" data-src={src}>
+    {`
+      // Script para carregar ${src} após o carregamento da página
+      window.addEventListener('load', function() {
+        var script = document.createElement('script');
+        script.src = "${src}";
+        script.type = "${type}";
+        ${onload ? `script.onload = function() { ${onload} };` : ''}
+        document.body.appendChild(script);
+        console.log('Script carregado: ${src}');
+      });
+    `}
+  </script>
+)}
+
+<script>
+  // Monitorar performance de carregamento de scripts
+  if (window.performance && window.performance.getEntriesByType) {
+    window.addEventListener('load', () => {
+      const scriptEntries = performance.getEntriesByType('resource').filter(
+        entry => entry.initiatorType === 'script'
+      );
+      
+      if (scriptEntries.length > 0) {
+        console.debug('Script loading performance:', 
+          scriptEntries.map(entry => ({
+            name: entry.name.split('/').pop(),
+            duration: Math.round(entry.duration),
+            size: entry.transferSize
+          }))
+        );
+      }
+    });
+  }
+</script> 

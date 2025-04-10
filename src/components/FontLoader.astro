@@ -1,0 +1,169 @@
+---
+/**
+ * FontLoader.astro
+ * 
+ * Componente para carregamento otimizado de fontes
+ * - Preload para fontes críticas
+ * - Font-display: swap para evitar FOIT (Flash of Invisible Text)
+ * - Suporte para formatos modernos (woff2, woff)
+ * - Detecção de fontes já carregadas para evitar flash
+ */
+
+interface Props {
+  preload?: boolean; // Se true, adiciona preload para fontes críticas
+  display?: 'swap' | 'block' | 'fallback' | 'optional'; // Estratégia de exibição
+  subsets?: string[]; // Subconjuntos de caracteres (ex: ['latin'])
+}
+
+const { 
+  preload = true, 
+  display = 'swap',
+  subsets = ['latin']
+} = Astro.props;
+
+// Definição das fontes do projeto
+const fonts = [
+  {
+    family: 'Inter',
+    weights: [400, 500, 600, 700, 800],
+    isVariable: true,
+    critical: true, // Fontes críticas são preloaded
+    formats: ['woff2', 'woff'],
+    style: 'normal'
+  }
+];
+
+// Filtrar apenas fontes críticas para preload
+const criticalFonts = preload ? fonts.filter(font => font.critical) : [];
+---
+
+<!-- Preload de fontes críticas -->
+{preload && criticalFonts.map(font => (
+  <link 
+    rel="preload" 
+    href={`/fonts/${font.family.toLowerCase()}${font.isVariable ? '-var' : ''}.woff2`}
+    as="font" 
+    type="font/woff2" 
+    crossorigin="anonymous"
+  />
+))}
+
+<!-- Estilos de fonte com font-display otimizado -->
+<style is:inline define:vars={{ fontDisplay: display }}>
+  /* Font Face Declarations */
+  @font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 100 900; /* Variable font */
+    font-display: var(--fontDisplay);
+    src: url('/fonts/inter-var.woff2') format('woff2-variations'),
+         url('/fonts/inter-var.woff') format('woff-variations');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  
+  /* Fallback para navegadores que não suportam fontes variáveis */
+  @supports not (font-variation-settings: normal) {
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 400;
+      font-display: var(--fontDisplay);
+      src: url('/fonts/inter-regular.woff2') format('woff2'),
+           url('/fonts/inter-regular.woff') format('woff');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 500;
+      font-display: var(--fontDisplay);
+      src: url('/fonts/inter-500.woff2') format('woff2'),
+           url('/fonts/inter-500.woff') format('woff');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 600;
+      font-display: var(--fontDisplay);
+      src: url('/fonts/inter-600.woff2') format('woff2'),
+           url('/fonts/inter-600.woff') format('woff');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 700;
+      font-display: var(--fontDisplay);
+      src: url('/fonts/inter-700.woff2') format('woff2'),
+           url('/fonts/inter-700.woff') format('woff');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 800;
+      font-display: var(--fontDisplay);
+      src: url('/fonts/inter-800.woff2') format('woff2'),
+           url('/fonts/inter-800.woff') format('woff');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+  }
+</style>
+
+<script>
+  // Script para detectar quando as fontes estão carregadas e aplicar classe no body
+  // Isso evita o flash de texto não estilizado (FOUT)
+  document.addEventListener('DOMContentLoaded', () => {
+    if ('fonts' in document) {
+      Promise.all([
+        document.fonts.load('1em Inter'),
+        document.fonts.load('bold 1em Inter'),
+      ]).then(() => {
+        document.documentElement.classList.add('fonts-loaded');
+      }).catch(err => {
+        console.warn('Falha ao carregar fontes:', err);
+        // Adiciona classe de fallback para garantir que o conteúdo seja visível
+        document.documentElement.classList.add('fonts-failed');
+      });
+    } else {
+      // Fallback para navegadores que não suportam Font Loading API
+      // Adiciona classe após um timeout para garantir que as fontes sejam exibidas
+      setTimeout(() => {
+        document.documentElement.classList.add('fonts-loaded');
+      }, 300);
+    }
+  });
+</script>
+
+<!-- Estilos para evitar layout shifts durante o carregamento de fontes -->
+<style is:global>
+  :root {
+    --font-sans: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    --font-fallback: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }
+  
+  /* Ajustes para evitar layout shifts */
+  html {
+    font-family: var(--font-fallback);
+  }
+  
+  html.fonts-loaded {
+    font-family: var(--font-sans);
+  }
+  
+  /* Ajustes específicos para tamanhos de fonte críticos */
+  .size-adjust {
+    font-size: 100%;
+    /* Ajustes específicos para cada fonte podem ser adicionados aqui */
+  }
+  
+  html.fonts-loaded .size-adjust {
+    /* Remover ajustes quando as fontes estiverem carregadas */
+    font-size: inherit;
+  }
+</style> 

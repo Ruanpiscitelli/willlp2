@@ -1,0 +1,11 @@
+# www.robotstxt.org/
+# Permite indexação completa do site para otimização de SEO
+
+User-agent: *
+Allow: /
+Disallow: /draft-pages/
+Disallow: /admin/
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://copycash.netlify.app/sitemap.xml 

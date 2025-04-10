@@ -1,0 +1,79 @@
+---
+interface Props {
+  href: string;
+  media?: string;
+  critical?: boolean;
+  inline?: boolean;
+}
+
+const { 
+  href, 
+  media = 'all', 
+  critical = false,
+  inline = false
+} = Astro.props;
+
+// Função para obter o conteúdo do CSS para inline
+async function fetchCss(url: string): Promise<string> {
+  try {
+    // Se for uma URL externa
+    if (url.startsWith('http')) {
+      const response = await fetch(url);
+      return await response.text();
+    } 
+    // Se for um arquivo local, importamos diretamente
+    else {
+      // Nota: Em produção, isso seria implementado de forma diferente
+      // Esta é uma simplificação para demonstração
+      return `/* CSS inline seria carregado aqui */`;
+    }
+  } catch (error) {
+    console.error('Erro ao carregar CSS:', error);
+    return '/* Erro ao carregar CSS */';
+  }
+}
+
+// Obter o CSS para inline se necessário
+let inlineCSS = '';
+if (inline) {
+  inlineCSS = await fetchCss(href);
+}
+---
+
+{critical ? (
+  /* CSS crítico é carregado imediatamente */
+  inline ? (
+    <style set:html={inlineCSS}></style>
+  ) : (
+    <link rel="stylesheet" href={href} media={media} />
+  )
+) : (
+  /* CSS não crítico é carregado de forma assíncrona */
+  <Fragment>
+    <link rel="preload" href={href} as="style" media={media} onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript>
+      <link rel="stylesheet" href={href} media={media} />
+    </noscript>
+  </Fragment>
+)}
+
+<script>
+  // Monitorar performance de carregamento de CSS
+  if (window.performance && window.performance.getEntriesByType) {
+    window.addEventListener('load', () => {
+      const cssEntries = performance.getEntriesByType('resource').filter(
+        entry => entry.initiatorType === 'link' && entry.name.endsWith('.css')
+      );
+      
+      if (cssEntries.length > 0) {
+        console.debug('CSS loading performance:', 
+          cssEntries.map(entry => ({
+            name: entry.name.split('/').pop(),
+            duration: Math.round(entry.duration),
+            size: entry.transferSize
+          }))
+        );
+      }
+    });
+  }
+</script> 

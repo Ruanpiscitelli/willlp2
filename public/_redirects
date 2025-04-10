@@ -1,0 +1,20 @@
+# Redirecionamentos para Netlify
+# Garante que todas as rotas sejam redirecionadas para index.html (SPA)
+/*    /index.html   200
+
+# Redirecionamento para sitemap.xml
+/sitemap.xml  /.netlify/functions/sitemap  200
+
+# Redirecionamento para HTTPS
+http://copycash.netlify.app/*    https://copycash.netlify.app/:splat    301!
+http://www.copycash.netlify.app/*    https://copycash.netlify.app/:splat    301!
+
+# Redirecionamento para domínio personalizado (quando configurado)
+# http://seudominio.com/*    https://seudominio.com/:splat    301!
+# http://www.seudominio.com/*    https://seudominio.com/:splat    301!
+
+# Redirecionamentos específicos
+/home    /    301
+/inicio    /    301
+/telegram    https://clkdmg.site/subscribe/copycash-vip-aqs-tf-pv-2412    302
+/whatsapp    https://wa.me/5511999999999    302 

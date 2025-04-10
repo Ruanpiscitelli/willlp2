@@ -1,0 +1,177 @@
+---
+/**
+ * StyleLoader.astro
+ * 
+ * Componente para carregamento otimizado de estilos CSS
+ * - Suporte para preload de estilos críticos
+ * - Carregamento condicional baseado em media queries
+ * - Suporte para print stylesheets
+ * - Carregamento assíncrono para estilos não críticos
+ */
+
+interface Props {
+  href: string;
+  rel?: 'stylesheet' | 'preload';
+  media?: string;
+  critical?: boolean;
+  print?: boolean;
+  async?: boolean;
+  integrity?: string;
+  crossorigin?: 'anonymous' | 'use-credentials';
+}
+
+const {
+  href,
+  rel = 'stylesheet',
+  media,
+  critical = false,
+  print = false,
+  async = false,
+  integrity,
+  crossorigin
+} = Astro.props;
+
+// Determinar se o estilo é externo ou interno
+const isExternal = href.startsWith('http') || href.startsWith('//');
+
+// Configurar media query para print se necessário
+const mediaValue = print ? 'print' : media;
+
+// Determinar se deve ser preload
+const shouldPreload = critical && rel === 'stylesheet';
+---
+
+{/* Preload para estilos críticos */}
+{shouldPreload && (
+  <link 
+    rel="preload" 
+    href={href} 
+    as="style"
+    {...mediaValue ? { media: mediaValue } : {}}
+    {...integrity ? { integrity } : {}}
+    {...crossorigin ? { crossorigin } : {}}
+  />
+)}
+
+{/* Carregamento assíncrono para estilos não críticos */}
+{async ? (
+  <>
+    <link 
+      rel="preload" 
+      href={href} 
+      as="style" 
+      {...mediaValue ? { media: mediaValue } : {}}
+      {...integrity ? { integrity } : {}}
+      {...crossorigin ? { crossorigin } : {}}
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript>
+      <link 
+        rel="stylesheet" 
+        href={href}
+        {...mediaValue ? { media: mediaValue } : {}}
+        {...integrity ? { integrity } : {}}
+        {...crossorigin ? { crossorigin } : {}}
+      />
+    </noscript>
+  </>
+) : (
+  <link 
+    rel={rel} 
+    href={href}
+    {...mediaValue ? { media: mediaValue } : {}}
+    {...integrity ? { integrity } : {}}
+    {...crossorigin ? { crossorigin } : {}}
+    data-critical={critical ? 'true' : null}
+  />
+)}
+
+{/* Script para monitorar carregamento e performance */}
+{critical && (
+  <script is:inline define:vars={{ href }}>
+    // Monitorar tempo de carregamento para estilos críticos
+    if (window.performance && window.performance.mark) {
+      const linkEl = document.querySelector(`link[href="${href}"]`);
+      if (linkEl) {
+        const styleId = `style-${href.split('/').pop().replace(/\W+/g, '-')}`;
+        
+        // Marcar início do carregamento
+        performance.mark(`${styleId}-start`);
+        
+        if (linkEl.getAttribute('rel') === 'stylesheet') {
+          // Para stylesheets regulares
+          if ('onload' in linkEl) {
+            linkEl.addEventListener('load', () => {
+              // Marcar fim do carregamento
+              performance.mark(`${styleId}-end`);
+              
+              // Criar medição
+              performance.measure(
+                `Style Load: ${href}`,
+                `${styleId}-start`,
+                `${styleId}-end`
+              );
+              
+              // Enviar para analytics se disponível
+              if (window.gtag) {
+                const loadTime = performance.getEntriesByName(`Style Load: ${href}`)[0].duration;
+                gtag('event', 'style_load', {
+                  'event_category': 'Performance',
+                  'event_label': href,
+                  'value': Math.round(loadTime)
+                });
+              }
+            });
+          }
+        }
+      }
+    }
+  </script>
+)}
+
+<style>
+  /* Estilos para fallback caso o CSS falhe */
+  [data-style-fallback] {
+    display: none;
+  }
+  
+  .style-error [data-style-fallback] {
+    display: block;
+  }
+</style>
+
+<script>
+  // Detectar falhas de carregamento de CSS
+  document.addEventListener('DOMContentLoaded', () => {
+    const links = document.querySelectorAll('link[rel="stylesheet"]');
+    
+    links.forEach(link => {
+      // Infelizmente, os eventos de erro para CSS nem sempre são confiáveis
+      // Implementamos uma verificação básica para estilos que falharam
+      setTimeout(() => {
+        try {
+          // Tentar acessar as regras CSS (isso falhará para CSS de outros domínios devido a CORS)
+          if (link.sheet && link.sheet.cssRules) {
+            // CSS carregado com sucesso
+          }
+        } catch (e) {
+          if (e.name !== 'SecurityError') {
+            // Se não for um erro de segurança CORS, provavelmente é uma falha real
+            document.documentElement.classList.add('style-error');
+            
+            // Registrar erro
+            console.error(`Possível falha ao carregar CSS: ${link.getAttribute('href')}`);
+            
+            // Enviar para analytics se disponível
+            if (window.gtag) {
+              gtag('event', 'style_error', {
+                'event_category': 'Error',
+                'event_label': link.getAttribute('href')
+              });
+            }
+          }
+        }
+      }, 2000); // Verificar após 2 segundos
+    });
+  });
+</script> 

@@ -1,0 +1,353 @@
+<section class="steps">
+  <div class="candlestick-bg">
+    <!-- Grade do gráfico -->
+    <div class="chart-grid">
+      <div class="horizontal-line"></div>
+      <div class="horizontal-line"></div>
+      <div class="horizontal-line"></div>
+      <div class="horizontal-line"></div>
+    </div>
+    
+    <!-- Linha de média móvel -->
+    <div class="moving-average"></div>
+    
+    <!-- Container para os candles -->
+    <div class="candlestick-container" id="candlestick-container"></div>
+  </div>
+
+  <div class="container">
+    <h2 class="steps-title">APENAS 3 CLIQUES SEPARAM VOCÊ DOS RESULTADOS:</h2>
+    
+    <div class="steps-container">
+      <div class="step-card">
+        <div class="step-number">1º</div>
+        <h3 class="step-title">ATIVAÇÃO IMEDIATA</h3>
+        <p class="step-text">Sistema automatizado trabalha 24h mesmo durante o sono</p>
+        <div class="step-arrow">→</div>
+      </div>
+      
+      <div class="step-card">
+        <div class="step-number">2º</div>
+        <h3 class="step-title">SINAIS PRECISOS</h3>
+        <p class="step-text">Alertas exatos sobre quando entrar e quando multiplicar</p>
+        <div class="step-arrow">→</div>
+      </div>
+      
+      <div class="step-card">
+        <div class="step-number">3º</div>
+        <h3 class="step-title">RESULTADOS RÁPIDOS</h3>
+        <p class="step-text">Valores podem ser transferidos direto para conta bancária</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Generate and animate the candlestick chart
+  document.addEventListener('DOMContentLoaded', () => {
+    const candlestickContainer = document.getElementById('candlestick-container');
+    if (!candlestickContainer) {
+      console.error('Candlestick container not found!');
+      return;
+    }
+    
+    // Configuration
+    const totalCandles = 35; // Number of candles to display
+    const updateInterval = 2000; // Time between candle updates in ms
+    const candleWidth = 100 / totalCandles; // Width of candles in percentage
+    
+    console.log('Initializing candlestick chart...');
+    
+    // Remove any existing candles
+    candlestickContainer.innerHTML = '';
+    
+    // Generate initial candles
+    for (let i = 0; i < totalCandles; i++) {
+      createCandle(candlestickContainer, i, candleWidth);
+    }
+    
+    // Update candles periodically
+    setInterval(() => {
+      // Remove first candle
+      if (candlestickContainer.firstChild) {
+        candlestickContainer.removeChild(candlestickContainer.firstChild);
+      }
+      
+      // Shift all candles to the left
+      const candles = candlestickContainer.querySelectorAll('.candle');
+      candles.forEach(candle => {
+        const currentLeft = parseFloat(candle.style.left);
+        candle.style.left = (currentLeft - candleWidth) + '%';
+      });
+      
+      // Add new candle at the end
+      createCandle(candlestickContainer, totalCandles - 1, candleWidth);
+      
+      // Update the moving average line
+      updateMovingAverage();
+    }, updateInterval);
+
+    // Initial moving average
+    updateMovingAverage();
+    
+    console.log('Candlestick chart initialized with', totalCandles, 'candles');
+  });
+  
+  function createCandle(container, position, candleWidth) {
+    // Random candle properties
+    const isGreen = Math.random() > 0.5;
+    const height = 10 + Math.random() * 50; // Random height between 10% and 60%
+    const wickHeight = height + (5 + Math.random() * 15); // Wick extends beyond body
+    const bodyStart = 50 - height / 2; // Center the candle body vertically
+    const wickStart = 50 - wickHeight / 2;
+    
+    // Create candle element
+    const candle = document.createElement('div');
+    candle.className = `candle ${isGreen ? 'green' : 'red'}`;
+    candle.style.left = (position * candleWidth) + '%';
+    candle.style.width = (candleWidth * 0.6) + '%';
+    
+    // Create wick (the thin line)
+    const wick = document.createElement('div');
+    wick.className = 'wick';
+    wick.style.height = wickHeight + '%';
+    wick.style.top = wickStart + '%';
+    
+    // Create body (the thick part)
+    const body = document.createElement('div');
+    body.className = 'body';
+    body.style.height = height + '%';
+    body.style.top = bodyStart + '%';
+    
+    // Assemble the candle
+    candle.appendChild(wick);
+    candle.appendChild(body);
+    container.appendChild(candle);
+    
+    return candle;
+  }
+  
+  function updateMovingAverage() {
+    const movingAverage = document.querySelector('.moving-average');
+    if (!movingAverage) {
+      console.error('Moving average element not found!');
+      return;
+    }
+    
+    // Create 5 control points for the cubic bezier curve
+    const points = [];
+    for (let i = 0; i < 5; i++) {
+      // Value between 30 and 70 (to keep within visible area)
+      points.push({
+        x: i * 25,
+        y: 30 + Math.random() * 40
+      });
+    }
+    
+    // Create SVG path from points
+    let path = `M ${points[0].x} ${points[0].y}`;
+    for (let i = 1; i < points.length; i++) {
+      const cp1x = points[i-1].x + 10;
+      const cp1y = points[i-1].y;
+      const cp2x = points[i].x - 10;
+      const cp2y = points[i].y;
+      path += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${points[i].x} ${points[i].y}`;
+    }
+    
+    // Apply path to the element using clip-path
+    movingAverage.style.clipPath = `path('${path}')`;
+  }
+</script>
+
+<style>
+  .steps {
+    padding: var(--spacing-xl) 0;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Candlestick chart background */
+  .candlestick-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.2; /* Increased from 0.15 for better visibility */
+    z-index: 0;
+    background-color: #1a1f2a;
+    overflow: hidden;
+  }
+  
+  .chart-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+  
+  .horizontal-line {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.2); /* More visible */
+  }
+  
+  .horizontal-line:nth-child(1) { top: 20%; }
+  .horizontal-line:nth-child(2) { top: 40%; }
+  .horizontal-line:nth-child(3) { top: 60%; }
+  .horizontal-line:nth-child(4) { top: 80%; }
+  
+  .candlestick-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+  }
+  
+  .candle {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    transition: left 1s linear;
+  }
+  
+  .candle .wick {
+    position: absolute;
+    left: 50%;
+    width: 2px; /* Increased from 1px for visibility */
+    background-color: rgba(255, 255, 255, 0.8);
+    transform: translateX(-50%);
+  }
+  
+  .candle .body {
+    position: absolute;
+    left: 0;
+    width: 100%;
+  }
+  
+  .candle.green .body {
+    background-color: #00c31d;
+  }
+  
+  .candle.red .body {
+    background-color: #c30000;
+  }
+  
+  .moving-average {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #4c88ff;
+    opacity: 0.7; /* Increased from 0.6 */
+    transition: clip-path 2s ease;
+    z-index: 3;
+  }
+  
+  /* Original styles */
+  .steps-title {
+    font-size: 1.8rem;
+    margin-bottom: var(--spacing-xl);
+    font-weight: 800;
+    color: #ffffff;
+    position: relative;
+    z-index: 10;
+  }
+  
+  .steps-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    max-width: 1000px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+  }
+  
+  .step-card {
+    background-color: rgba(20, 25, 38, 0.9); /* Increased opacity for better contrast */
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    padding: var(--spacing-lg);
+    color: white;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  .step-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  .step-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: var(--spacing-sm);
+    color: var(--color-primary);
+    text-shadow: 0 0 10px rgba(195, 0, 0, 0.5);
+  }
+  
+  .step-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-sm);
+    color: #ffffff;
+  }
+  
+  .step-text {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-text-light);
+  }
+  
+  .step-arrow {
+    display: none;
+    position: absolute;
+    font-size: 2rem;
+    color: var(--color-primary);
+    top: 50%;
+    right: -25px;
+    transform: translateY(-50%);
+    z-index: 10;
+  }
+  
+  .container {
+    position: relative;
+    z-index: 10;
+  }
+  
+  @media (min-width: 768px) {
+    .steps-title {
+      font-size: 2.2rem;
+    }
+    
+    .steps-container {
+      flex-direction: row;
+    }
+    
+    .step-card {
+      flex: 1;
+    }
+    
+    .step-arrow {
+      display: block;
+    }
+    
+    .step-card:last-child .step-arrow {
+      display: none;
+    }
+  }
+</style>

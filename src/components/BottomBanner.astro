@@ -1,0 +1,68 @@
+<section class="bottom-banner">
+  <div class="container">
+    <div class="urgency-message">
+      <span class="warning-icon">⚠️</span>
+      87% DAS VAGAS JÁ FORAM PREENCHIDAS - DECISÃO URGENTE NECESSÁRIA!
+      <span class="warning-icon">⚠️</span>
+    </div>
+    <div class="timer-icon">⏳</div>
+  </div>
+</section>
+
+<style>
+  .bottom-banner {
+    background-color: #c30000;
+    color: white;
+    padding: 15px 0;
+    text-align: center;
+    animation: pulse 1.5s infinite;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .urgency-message {
+    font-weight: 800;
+    font-size: 16px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .warning-icon {
+    font-size: 20px;
+    animation: shake 1s infinite;
+    display: inline-block;
+  }
+  
+  .timer-icon {
+    position: absolute;
+    top: 50%;
+    right: 5%;
+    transform: translateY(-50%);
+    font-size: 24px;
+    animation: bounce 1.5s infinite;
+  }
+  
+  @keyframes shake {
+    0%, 100% { transform: rotate(0); }
+    25% { transform: rotate(15deg); }
+    75% { transform: rotate(-15deg); }
+  }
+  
+  @keyframes bounce {
+    0%, 100% { transform: translateY(-50%) scale(1); }
+    50% { transform: translateY(-50%) scale(1.2); }
+  }
+  
+  @media (min-width: 768px) {
+    .urgency-message {
+      font-size: 18px;
+    }
+    
+    .timer-icon {
+      font-size: 30px;
+    }
+  }
+</style>

@@ -1,0 +1,104 @@
+<section class="features">
+  <div class="container">
+    <h2 class="features-title">O MÉTODO COPY CA$H ESTÁ TRANSFORMANDO A VIDA DE:</h2>
+    
+    <div class="features-list">
+      <div class="feature-item">
+        <div class="check-container">
+          <span class="check-icon">✅</span>
+        </div>
+        <p>Quem precisa multiplicar seus rendimentos mensais em tempo recorde sem conhecimento técnico avançado</p>
+      </div>
+      
+      <div class="feature-item">
+        <div class="check-container">
+          <span class="check-icon">✅</span>
+        </div>
+        <p>Quem deseja conquistar liberdade financeira e geográfica através de métodos digitais comprovados por milhares</p>
+      </div>
+      
+      <div class="feature-item">
+        <div class="check-container">
+          <span class="check-icon">✅</span>
+        </div>
+        <p>Quem está cansado de trabalhar 8-12 horas diárias apenas para sobreviver de salário em salário</p>
+      </div>
+      
+      <div class="feature-item">
+        <div class="check-container">
+          <span class="check-icon">✅</span>
+        </div>
+        <p>Quem busca uma fonte de renda consistente e escalável sem depender de chefes ou horários fixos</p>
+      </div>
+      
+      <div class="feature-item">
+        <div class="check-container">
+          <span class="check-icon">✅</span>
+        </div>
+        <p>Quem quer realizar sonhos como carro novo, casa própria e viagens internacionais nos próximos 3-6 meses</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .features {
+    padding: var(--spacing-xl) 0;
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+  
+  .features-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+    color: white;
+  }
+  
+  .features-list {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .feature-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-lg);
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: var(--spacing-md);
+    transition: transform 0.3s ease;
+  }
+  
+  .feature-item:hover {
+    transform: translateX(10px);
+  }
+  
+  .check-container {
+    margin-right: var(--spacing-md);
+    flex-shrink: 0;
+  }
+  
+  .check-icon {
+    font-size: 1.8rem;
+    color: var(--color-secondary);
+    animation: pulse 2s infinite;
+    display: inline-block;
+  }
+  
+  .feature-item p {
+    font-size: 1.1rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  
+  @media (min-width: 768px) {
+    .features-title {
+      font-size: 2.2rem;
+    }
+    
+    .feature-item p {
+      font-size: 1.2rem;
+    }
+  }
+</style>

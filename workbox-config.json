@@ -1,0 +1,9 @@
+{
+  "globDirectory": "dist/",
+  "globPatterns": [
+    "**/*.{html,css,js,json,webp,png,jpg,jpeg,svg,ico,woff2}"
+  ],
+  "swDest": "dist/sw.js",
+  "skipWaiting": true,
+  "clientsClaim": true
+} 

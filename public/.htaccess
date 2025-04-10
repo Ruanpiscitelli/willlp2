@@ -1,0 +1,134 @@
+# Habilitar compressão
+<IfModule mod_deflate.c>
+  # Ativar compressão
+  SetOutputFilter DEFLATE
+  # Não comprimir imagens e outros arquivos binários
+  SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png|webp|avif|woff2?|mp4|webm)$ no-gzip dont-vary
+  
+  # Comprimir HTML, CSS, JavaScript, texto, XML e fontes
+  AddOutputFilterByType DEFLATE text/plain
+  AddOutputFilterByType DEFLATE text/html
+  AddOutputFilterByType DEFLATE text/xml
+  AddOutputFilterByType DEFLATE text/css
+  AddOutputFilterByType DEFLATE text/javascript
+  AddOutputFilterByType DEFLATE application/xml
+  AddOutputFilterByType DEFLATE application/xhtml+xml
+  AddOutputFilterByType DEFLATE application/rss+xml
+  AddOutputFilterByType DEFLATE application/javascript
+  AddOutputFilterByType DEFLATE application/x-javascript
+  AddOutputFilterByType DEFLATE application/json
+  AddOutputFilterByType DEFLATE application/font-woff
+  AddOutputFilterByType DEFLATE application/font-woff2
+  AddOutputFilterByType DEFLATE application/vnd.ms-fontobject
+  AddOutputFilterByType DEFLATE application/x-font-ttf
+  AddOutputFilterByType DEFLATE font/opentype
+  AddOutputFilterByType DEFLATE font/ttf
+  AddOutputFilterByType DEFLATE font/eot
+  AddOutputFilterByType DEFLATE font/otf
+</IfModule>
+
+# Servir arquivos pré-comprimidos se disponíveis
+<IfModule mod_headers.c>
+  # Servir arquivos Brotli se disponíveis e o navegador suportar
+  <FilesMatch ".(js|css|html|xml|json|txt|svg)$">
+    RewriteCond %{HTTP:Accept-Encoding} br
+    RewriteCond %{REQUEST_FILENAME}.br -f
+    RewriteRule ^(.*)$ $1.br [QSA,L]
+    <Files *.js.br>
+      AddType "application/javascript" .br
+    </Files>
+    <Files *.css.br>
+      AddType "text/css" .br
+    </Files>
+    <Files *.html.br>
+      AddType "text/html" .br
+    </Files>
+    <Files *.xml.br>
+      AddType "application/xml" .br
+    </Files>
+    <Files *.json.br>
+      AddType "application/json" .br
+    </Files>
+    <Files *.txt.br>
+      AddType "text/plain" .br
+    </Files>
+    <Files *.svg.br>
+      AddType "image/svg+xml" .br
+    </Files>
+    <FilesMatch "\.(js|css|html|xml|json|txt|svg)\.br$">
+      Header set Content-Encoding br
+      Header append Vary Accept-Encoding
+    </FilesMatch>
+  </FilesMatch>
+
+  # Servir arquivos Gzip se disponíveis e o navegador suportar
+  <FilesMatch ".(js|css|html|xml|json|txt|svg)$">
+    RewriteCond %{HTTP:Accept-Encoding} gzip
+    RewriteCond %{REQUEST_FILENAME}.gz -f
+    RewriteRule ^(.*)$ $1.gz [QSA,L]
+    <Files *.js.gz>
+      AddType "application/javascript" .gz
+    </Files>
+    <Files *.css.gz>
+      AddType "text/css" .gz
+    </Files>
+    <Files *.html.gz>
+      AddType "text/html" .gz
+    </Files>
+    <Files *.xml.gz>
+      AddType "application/xml" .gz
+    </Files>
+    <Files *.json.gz>
+      AddType "application/json" .gz
+    </Files>
+    <Files *.txt.gz>
+      AddType "text/plain" .gz
+    </Files>
+    <Files *.svg.gz>
+      AddType "image/svg+xml" .gz
+    </Files>
+    <FilesMatch "\.(js|css|html|xml|json|txt|svg)\.gz$">
+      Header set Content-Encoding gzip
+      Header append Vary Accept-Encoding
+    </FilesMatch>
+  </FilesMatch>
+</IfModule>
+
+# Cache-Control
+<IfModule mod_expires.c>
+  ExpiresActive On
+  
+  # Imagens
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/gif "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/avif "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType image/x-icon "access plus 1 year"
+  
+  # Vídeo
+  ExpiresByType video/mp4 "access plus 1 year"
+  ExpiresByType video/webm "access plus 1 year"
+  
+  # CSS, JavaScript
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType text/javascript "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  
+  # Outros
+  ExpiresByType application/pdf "access plus 1 month"
+  ExpiresByType application/x-shockwave-flash "access plus 1 month"
+</IfModule>
+
+# Adicionar cabeçalhos de segurança
+<IfModule mod_headers.c>
+  # Desativar MIME-sniffing
+  Header set X-Content-Type-Options "nosniff"
+  
+  # Proteção XSS
+  Header set X-XSS-Protection "1; mode=block"
+  
+  # Impedir que o site seja carregado em um iframe (proteção contra clickjacking)
+  Header set X-Frame-Options "SAMEORIGIN"
+</IfModule> 

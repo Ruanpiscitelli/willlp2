@@ -1,0 +1,237 @@
+---
+interface PricingTier {
+  name: string;
+  price: string;
+  period: string;
+  description: string;
+  features: string[];
+  cta: string;
+  popular?: boolean;
+}
+
+const pricingTiers: PricingTier[] = [
+  {
+    name: "Starter",
+    price: "$19",
+    period: "per month",
+    description: "Perfect for individuals and small projects",
+    features: [
+      "1 website",
+      "100 pages",
+      "Free SSL certificate",
+      "1GB storage",
+      "Community support"
+    ],
+    cta: "Get Started"
+  },
+  {
+    name: "Professional",
+    price: "$49",
+    period: "per month",
+    description: "Ideal for growing businesses",
+    features: [
+      "5 websites",
+      "Unlimited pages",
+      "Free SSL certificate",
+      "10GB storage",
+      "Priority support",
+      "Custom domain",
+      "Advanced analytics"
+    ],
+    cta: "Get Started",
+    popular: true
+  },
+  {
+    name: "Enterprise",
+    price: "$99",
+    period: "per month",
+    description: "For large organizations and agencies",
+    features: [
+      "Unlimited websites",
+      "Unlimited pages",
+      "Free SSL certificate",
+      "100GB storage",
+      "24/7 dedicated support",
+      "Custom domain",
+      "Advanced analytics",
+      "White labeling",
+      "API access"
+    ],
+    cta: "Contact Sales"
+  }
+];
+---
+
+<section id="pricing" class="pricing">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Simple, transparent pricing</h2>
+      <p class="section-subtitle">Choose the plan that's right for you and start building your website today</p>
+    </div>
+    
+    <div class="pricing-tiers">
+      {pricingTiers.map(tier => (
+        <div class={`pricing-card ${tier.popular ? 'popular' : ''}`}>
+          {tier.popular && <div class="popular-badge">Most Popular</div>}
+          <div class="tier-name">{tier.name}</div>
+          <div class="tier-price">
+            <span class="price">{tier.price}</span>
+            <span class="period">{tier.period}</span>
+          </div>
+          <p class="tier-description">{tier.description}</p>
+          <ul class="tier-features">
+            {tier.features.map(feature => (
+              <li class="tier-feature">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feature-icon">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                {feature}
+              </li>
+            ))}
+          </ul>
+          <a href="#" class={`btn ${tier.popular ? 'btn-primary' : 'btn-outline'}`}>{tier.cta}</a>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>  .pricing {
+    padding: var(--spacing-xl) 0;
+  }
+  
+  .section-header {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto var(--spacing-xl);
+  }
+  
+  .section-title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-text);
+  }
+  
+  .section-subtitle {
+    font-size: 1.125rem;
+    color: var(--color-text-light);
+  }
+  
+  .pricing-tiers {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+  
+  .pricing-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: var(--spacing-lg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eaeef3;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .pricing-card.popular {
+    border-color: var(--color-primary);
+    transform: scale(1.05);
+    z-index: 1;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+  
+  .popular-badge {
+    position: absolute;
+    top: -12px;
+    right: var(--spacing-lg);
+    background-color: var(--color-primary);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  
+  .tier-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .tier-price {
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .price {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+  
+  .period {
+    font-size: 1rem;
+    color: var(--color-text-light);
+  }
+  
+  .tier-description {
+    color: var(--color-text-light);
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .tier-features {
+    list-style: none;
+    margin-bottom: var(--spacing-lg);
+    flex-grow: 1;
+  }
+  
+  .tier-feature {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+    color: var(--color-text);
+  }
+  
+  .feature-icon {
+    color: var(--color-primary);
+    margin-right: var(--spacing-sm);
+  }
+  
+  .btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    background-color: color-mix(in srgb, var(--color-primary) 90%, black);
+  }
+  
+  .btn-outline {
+    background-color: transparent;
+    color: var(--color-text);
+    border: 1px solid #d1d5db;
+  }
+  
+  .btn-outline:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+  
+  @media (min-width: 768px) {
+    .pricing-tiers {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

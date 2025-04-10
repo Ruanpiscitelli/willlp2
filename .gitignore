@@ -1,4 +1,39 @@
+# Dependencies
 node_modules
 
-# Local Netlify folder
+# Build output
+dist/
+
+# Astro cache & logs
+.astro/
+*.log*
+
+# Environment variables
+.env*
+!.env.example
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.sublime-workspace
+*.sublime-project
+.idea/
+.cursor/
+
+# Netlify local files
 .netlify
+
+# Build stats/reports
+bundle-stats.json
+coverage/
+
+# Generated HTML files in root (often from builds)
+site.html
+*.html

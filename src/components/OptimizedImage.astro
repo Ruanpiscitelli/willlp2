@@ -1,0 +1,56 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  src: string | ImageMetadata;
+  alt: string;
+  width: number;
+  height: number;
+  class?: string;
+  loading?: 'eager' | 'lazy';
+  fetchpriority?: 'high' | 'low' | 'auto';
+  sizes?: string;
+  format?: 'avif' | 'webp' | 'jpeg' | 'jpg' | 'png' | 'gif';
+  quality?: number;
+}
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  loading = 'lazy',
+  fetchpriority = 'auto',
+  sizes = '(min-width: 1024px) 1024px, 100vw',
+  format = 'webp',
+  quality = 80
+} = Astro.props;
+const className = Astro.props.class;
+---
+
+<Image
+  src={src}
+  alt={alt}
+  width={width}
+  height={height}
+  loading={loading}
+  fetchpriority={fetchpriority}
+  class={className}
+  sizes={sizes}
+  format={format}
+  quality={quality}
+/>
+
+<style>
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-sm, 8px);
+    transition: transform 0.3s ease;
+  }
+  
+  img:hover {
+    transform: scale(1.02);
+  }
+</style> 
